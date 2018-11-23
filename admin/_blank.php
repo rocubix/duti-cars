@@ -22,7 +22,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="/index.php">
                     Administrator
                 </a>
             </div>
@@ -65,11 +65,12 @@
                         <!-- Main Menu -->
                         <div class="side-menu-container">
                             <ul class="nav navbar-nav">
-                                <li class="active"><a href="#"><span class="glyphicon glyphicon-dashboard"></span> Dashboard</a>
+                                <li class="active"><a href="/admin/products/index.php"><span class="glyphicon glyphicon-dashboard"></span> Products</a>
                                 </li>
-                                <li><a href="#"><span class="glyphicon glyphicon-plane"></span> Active Link</a></li>
-                                <li><a href="#"><span class="glyphicon glyphicon-cloud"></span> Link</a></li>
-
+                                <li><a href="/admin/products/index.php"><span class="glyphicon glyphicon-plane"></span> Images</a></li>
+                                <li><a href="/admin/features/index.php"><span class="glyphicon glyphicon-cloud"></span> Features</a></li>
+                                <li><a href="/admin/characteristics/index.php"><span class="glyphicon glyphicon-cloud"></span> Characteristics</a></li>
+                                <li><a href="/admin/reservations/index.php"><span class="glyphicon glyphicon-cloud"></span> Reservations</a></li>
                                 <!-- Dropdown-->
                                 <li class="panel panel-default" id="dropdown">
                                     <a data-toggle="collapse" href="#dropdown-lvl1">
