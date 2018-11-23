@@ -27,7 +27,7 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/">Home</a></li>
                 <li><a href="product.php">Product Template</a></li>
-                <li><a href="#">Page 2</a></li>
+                <li><a href="admin.php">Admin</a></li>
             </ul>
         </div>
     </nav>
