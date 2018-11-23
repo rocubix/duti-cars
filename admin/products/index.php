@@ -6,6 +6,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/assets/css/admin/main.css">
     <!------ Include the above in your HEAD tag ---------->
+    <style>
+        #product_table tbody tr:hover{
+            background-color: #ff25e9;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-static-top">
@@ -138,7 +143,7 @@
 
                 <hr>
 
-                <div class="table-responsive ">
+                <div id="product_table" class="table-responsive">
                     <table class="table active">
                         <thead>
                         <tr>
@@ -151,6 +156,22 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Anna</td>
+                            <td>Pitt</td>
+                            <td>35</td>
+                            <td>New York</td>
+                            <td>USA</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Anna</td>
+                            <td>Pitt</td>
+                            <td>35</td>
+                            <td>New York</td>
+                            <td>USA</td>
+                        </tr>
                         <tr>
                             <td>1</td>
                             <td>Anna</td>
@@ -177,6 +198,15 @@
 
 <!--    scripts-->
 <script>
+
+    // $('#product_table tbody tr').hover(function (event) {
+    //     if(event.type == "mouseenter"){
+    //         $(this).addClass("active")
+    //     }else{
+    //         $(this).removeClass("active")
+    //     }
+    // });
+
     $(function () {
         $('.navbar-toggle-sidebar').click(function () {
             $('.navbar-nav').toggleClass('slide-in');
