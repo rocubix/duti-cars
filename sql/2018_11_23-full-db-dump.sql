@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `characteristics`;
 CREATE TABLE `characteristics` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
-  `name` text,
-  `title` text,
+  `name` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_characteristic_fk` (`product_id`),
   CONSTRAINT `product_characteristic_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
@@ -52,7 +52,7 @@ DROP TABLE IF EXISTS `features`;
 CREATE TABLE `features` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
-  `name` text,
+  `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `features_products_fk` (`product_id`),
   CONSTRAINT `features_products_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
@@ -78,7 +78,7 @@ DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
-  `name` text,
+  `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `images_products_fk` (`product_id`),
   CONSTRAINT `images_products_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
@@ -103,14 +103,16 @@ DROP TABLE IF EXISTS `products`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_code` text,
-  `brand` text,
-  `model` text,
+  `product_code` varchar(8) DEFAULT NULL,
+  `brand` varchar(255) DEFAULT NULL,
+  `model` varchar(255) DEFAULT NULL,
   `price` float DEFAULT NULL,
   `availability` int(11) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `description` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `products_product_code_uindex` (`product_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -124,35 +126,35 @@ LOCK TABLES `products` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `rezervations`
+-- Table structure for table `reservations`
 --
 
-DROP TABLE IF EXISTS `rezervations`;
+DROP TABLE IF EXISTS `reservations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `rezervations` (
+CREATE TABLE `reservations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
-  `name` text,
-  `email` text,
-  `telephone` text,
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `telephone` varchar(30) DEFAULT NULL,
   `note` text,
   `status` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `rezervation_products_fk` (`product_id`),
-  CONSTRAINT `rezervation_products_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+  KEY `reservation_products_fk` (`product_id`),
+  CONSTRAINT `reservation_products_fk` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `rezervations`
+-- Dumping data for table `reservations`
 --
 
-LOCK TABLES `rezervations` WRITE;
-/*!40000 ALTER TABLE `rezervations` DISABLE KEYS */;
-/*!40000 ALTER TABLE `rezervations` ENABLE KEYS */;
+LOCK TABLES `reservations` WRITE;
+/*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -164,4 +166,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-11-23 19:10:00
+-- Dump completed on 2018-11-23 20:13:20
