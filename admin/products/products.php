@@ -1,16 +1,62 @@
+<?php
+
+echo '<pre>';
+var_dump($_GET);
+echo '</pre>';
+
+if(isset($_GET['save']) && $_GET['save'] == true){
+    $form['success'] = false;
+    $form['error'] = null;
+
+    if(
+        (isset($_GET['productCode']) && $_GET['productCode'] != '' ) &&
+        (isset($_GET['brand']) && $_GET['brand'] != '' ) &&
+        (isset($_GET['model']) && $_GET['model'] != '' ) &&
+        (isset($_GET['price']) && $_GET['price'] != '' ) &&
+        (isset($_GET['availability']) && $_GET['availability'] != '' )
+    ){
+        if(strlen($_GET['productCode']) == 8 ){
+            if(is_float((float)$_GET['price']) && $_GET['price'] > 0){
+                if (is_int((int)$_GET['availability'])){
+                    $form['data']['productCode'] = $_GET['productCode'];
+                    $form['data']['brand'] = $_GET['brand'];
+                    $form['data']['model'] = $_GET['model'];
+                    $form['data']['price'] = $_GET['price'];
+                    $form['data']['availability'] = $_GET['availability'];
+                    $form['data']['description'] = $_GET['description'];
+                    $form['success'] = true;
+                }else{
+                    //TODO[rocubux]: Find a better error name
+                    $form['error'][] = "nu este selectata o val corecta";
+                }
+            }else{
+                //TODO[rocubux]: Find a better error name
+                $form['error'][] = "pretul este gresit";
+            }
+        }else{
+            //TODO[rocubux]: Find a better error name
+            $form['error'][] = "product code gresit";
+        }
+    }else{
+        //TODO[rocubux]: Find a better error name
+        $form['error'][] = "nu sunt completate toate campurile";
+    }
+}
+
+echo '<pre>';
+var_dump($form);
+echo '</pre>';
+
+?>
+
 <html>
 <head>
-    <title>Admin</title>
+    <title>Add/Edit Products</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/assets/css/admin/main.css">
     <!------ Include the above in your HEAD tag ---------->
-    <style>
-        #product_table tbody tr:hover{
-            background-color: #ff25e9;
-        }
-    </style>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-static-top">
@@ -126,74 +172,103 @@
         </div>
     </div>
     <div class="col-xs-10 content">
+
+        <?php
+            if($form['success']){
+                ?>
+                <div class="alert alert-success" role="alert">
+                    <span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                    <span class="sr-only">Error:</span>
+                    Your product has been succesfuly added!
+                </div>
+        <?php
+            }else{
+                foreach ($form['error'] as $error){
+                    ?>
+                    <div class="alert alert-danger" role="alert">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <?= $error ?>
+                    </div>
+        <?php
+                }
+            }
+        ?>
+
         <div class="panel panel-default">
             <div class="panel-heading">
-                Products
-                <a class="btn btn-primary btn-xs pull-right" href="/admin/products/products.php">Add a new product</a>
+                Add/Edit Products
             </div>
             <div class="panel-body">
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
                     consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
                     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
                     proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="productCode">Product Code:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="productCode" placeholder="" name="productCode">
+                        </div>
+                    </div>
 
-                <hr>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="brand">Brand:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="brand" placeholder="" name="brand">
+                        </div>
+                    </div>
 
-                <div id="product_table" class="table-responsive">
-                    <table class="table active">
-                        <thead>
-                        <tr>
-                            <th>Product Code</th>
-                            <th>Brand</th>
-                            <th>Model</th>
-                            <th>Price</th>
-                            <th>Availability</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Anna</td>
-                            <td>Pitt</td>
-                            <td>35</td>
-                            <td>New York</td>
-                            <td>
-                                <a class="btn-link" href="/admin/products/products.php?id=1">Edit</a>
-                                <a class="btn btn-danger" href="?remove=1">Remove</a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="model">Model:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="model" placeholder="" name="model">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="price">Price:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="price" placeholder="" name="price">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="availability">Availability:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="availability" placeholder="" name="availability">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="description">Description:</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="5" id="description" name="description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-default" name="save" value="true">Submit</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-
         </div>
     </div>
-</div>
-<footer class="pull-left footer">
-    <p class="col-md-12">
-    <hr class="divider">
-    Copyright &COPY; 2018 <a href="http://www.pingpong-labs.com">Gravitano</a>
-    </p>
-</footer>
+    <footer class="pull-left footer">
+        <p class="col-md-12">
+        <hr class="divider">
+        Copyright &COPY; 2015 <a href="http://www.pingpong-labs.com">Gravitano</a>
+        </p>
+    </footer>
 </div>
 
 <!--    scripts-->
 <script>
-
-    // $('#product_table tbody tr').hover(function (event) {
-    //     if(event.type == "mouseenter"){
-    //         $(this).addClass("active")
-    //     }else{
-    //         $(this).removeClass("active")
-    //     }
-    // });
-
     $(function () {
         $('.navbar-toggle-sidebar').click(function () {
             $('.navbar-nav').toggleClass('slide-in');
@@ -211,5 +286,6 @@
 
 </body>
 </html>
+
 
 
