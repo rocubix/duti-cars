@@ -1,10 +1,42 @@
 <?php
+include "../../src/database.php";
 
-echo '<pre>';
-var_dump($_GET);
-echo '</pre>';
+const AVAILABILITY_UNAVAILABLE = 0;
+const AVAILABILITY_AVAILABLE = 1;
+const AVAILABILITY_RESERVED = 2;
+const AVAILABILITY_SOLD = 3;
+
+//echo '<pre>';
+//var_dump($_GET);
+//echo '</pre>';
+
+$form['data']['productCode'] = isset($_GET['productCode'])?$_GET['productCode']:'';
+$form['data']['brand'] = isset($_GET['brand'])?$_GET['brand']:'';
+$form['data']['model'] = isset($_GET['model'])?$_GET['model']:'';
+$form['data']['price'] = isset($_GET['price'])?$_GET['price']:'';
+$form['data']['availability'] = isset($_GET['availability'])?$_GET['availability']:'';
+$form['data']['description'] = isset($_GET['description'])?$_GET['description']:'';
+
+if (isset($_GET['id']) && $_GET['id'] != ''){
+
+    $sql = "SELECT * FROM products WHERE id = ".$_GET['id'];
+    $result = $DB->query($sql);
+
+    $form['data'] = $result->fetch_assoc();
+    $form['data']['productCode'] = $form['data']['product_code'];
+    unset($form['data']['product_code']);
+
+}
 
 if(isset($_GET['save']) && $_GET['save'] == true){
+
+    $form['data']['productCode'] = isset($_GET['productCode'])?$_GET['productCode']:'';
+    $form['data']['brand'] = isset($_GET['brand'])?$_GET['brand']:'';
+    $form['data']['model'] = isset($_GET['model'])?$_GET['model']:'';
+    $form['data']['price'] = isset($_GET['price'])?$_GET['price']:'';
+    $form['data']['availability'] = isset($_GET['availability'])?$_GET['availability']:'';
+    $form['data']['description'] = isset($_GET['description'])?$_GET['description']:'';
+
     $form['success'] = false;
     $form['error'] = null;
 
@@ -17,35 +49,69 @@ if(isset($_GET['save']) && $_GET['save'] == true){
     ){
         if(strlen($_GET['productCode']) == 8 ){
             if(is_float((float)$_GET['price']) && $_GET['price'] > 0){
-                if (is_int((int)$_GET['availability'])){
-                    $form['data']['productCode'] = $_GET['productCode'];
-                    $form['data']['brand'] = $_GET['brand'];
-                    $form['data']['model'] = $_GET['model'];
-                    $form['data']['price'] = $_GET['price'];
-                    $form['data']['availability'] = $_GET['availability'];
-                    $form['data']['description'] = $_GET['description'];
-                    $form['success'] = true;
+                if (is_numeric($_GET['availability'])){
+//                    stripping special characters
+                    $form['data']['productCode'] = htmlspecialchars($form['data']['productCode'],ENT_QUOTES );
+                    $form['data']['brand'] = htmlspecialchars($form['data']['brand'],ENT_QUOTES );
+                    $form['data']['model'] = htmlspecialchars($form['data']['model'],ENT_QUOTES );
+                    $form['data']['description'] = htmlspecialchars($form['data']['description'],ENT_QUOTES );
+                    if (isset($form['data']['id']) && $form['data']['id'] != ''){
+//                    updating database
+                        $sql = "
+                            UPDATE products
+                            SET product_code = '".$form['data']['productCode']."',
+                            brand = '".$form['data']['brand']."',
+                            model = '".$form['data']['model']."',
+                            price = '".$form['data']['price']."',
+                            availability = '".$form['data']['availability']."',
+                            description = '".$form['data']['description']."'
+                            WHERE id = ".$form['data']['id'].";
+                            
+                            ";
+                    }else{
+//                    inserting into database
+                        $sql = "INSERT INTO products VALUES (
+                        null ,
+                        '".$form['data']['productCode']."',
+                        '".$form['data']['brand']."',
+                        '".$form['data']['model']."',
+                        '".str_replace(',','.',$form['data']['price'])."',
+                        '".$form['data']['availability']."',
+                        '".$form['data']['description']."',
+                        null,
+                        NOW()
+                        );";
+                    }
+                    /** @var $DB mysqli */
+                    if($DB->query($sql)){
+                        if(!isset($form['data']['id'])){
+                            $form['data']['id'] = $DB->insert_id;
+                            $form['message'] = "Succesfuly insterted into db";
+                        }else{
+                            $form['message'] = "Succesfuly updated into db";
+                        }
+                        header('Location: /admin/products/products.php?id='.$form['data']['id']."&message=".$form['message']);
+                        $form['success'] = true;
+                    }else{
+                        $form['error'][] = mysqli_error($DB);
+                    }
                 }else{
-                    //TODO[rocubux]: Find a better error name
-                    $form['error'][] = "nu este selectata o val corecta";
+                    $form['error'][] = "the availability value is incorrect";
                 }
             }else{
-                //TODO[rocubux]: Find a better error name
-                $form['error'][] = "pretul este gresit";
+                $form['error'][] = "the price in incorrect";
             }
         }else{
-            //TODO[rocubux]: Find a better error name
-            $form['error'][] = "product code gresit";
+            $form['error'][] = "the product code in incorrect";
         }
     }else{
-        //TODO[rocubux]: Find a better error name
-        $form['error'][] = "nu sunt completate toate campurile";
+        $form['error'][] = "all required values must be filled";
     }
 }
 
-echo '<pre>';
-var_dump($form);
-echo '</pre>';
+//echo '<pre>';
+//var_dump($form);
+//echo '</pre>';
 
 ?>
 
@@ -174,15 +240,16 @@ echo '</pre>';
     <div class="col-xs-10 content">
 
         <?php
-            if($form['success']){
+            if(isset($_GET['message']) && $_GET['message']){
                 ?>
                 <div class="alert alert-success" role="alert">
                     <span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
                     <span class="sr-only">Error:</span>
-                    Your product has been succesfuly added!
+                    <?= $_GET['message'] ?>
                 </div>
         <?php
-            }else{
+            }
+            if(isset($form['error'])){
                 foreach ($form['error'] as $error){
                     ?>
                     <div class="alert alert-danger" role="alert">
@@ -190,7 +257,7 @@ echo '</pre>';
                         <span class="sr-only">Error:</span>
                         <?= $error ?>
                     </div>
-        <?php
+                    <?php
                 }
             }
         ?>
@@ -208,45 +275,55 @@ echo '</pre>';
                     proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
                 <form class="form-horizontal">
+<!--                    <input type="hidden" name="characteristics[]">-->
+<!--                    <input type="hidden" name="characteristics[]">-->
+                    <?php
+                    if(isset($form['data']['id']) && $form['data']['id'] !=''){
+                        ?>
+                        <input type="hidden" name="id" value="<?= $form['data']['id'] ?>">
+                    <?php
+                    }
+                    ?>
+
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="productCode">Product Code:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="productCode" placeholder="" name="productCode">
+                            <input type="text" class="form-control" id="productCode" placeholder="" name="productCode" value="<?= $form['data']['productCode'] ?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="brand">Brand:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="brand" placeholder="" name="brand">
+                            <input type="text" class="form-control" id="brand" placeholder="" name="brand" value="<?= $form['data']['brand']?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="model">Model:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="model" placeholder="" name="model">
+                            <input type="text" class="form-control" id="model" placeholder="" name="model" value="<?= $form['data']['model']?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="price">Price:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="price" placeholder="" name="price">
+                            <input type="text" class="form-control" id="price" placeholder="" name="price" value="<?= $form['data']['price']?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="availability">Availability:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="availability" placeholder="" name="availability">
+                            <input type="text" class="form-control" id="availability" placeholder="" name="availability" value="<?= $form['data']['availability']?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="description">Description:</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control" rows="5" id="description" name="description"></textarea>
+                            <textarea class="form-control" rows="5" id="description" name="description"><?= $form['data']['description']?></textarea>
                         </div>
                     </div>
 
