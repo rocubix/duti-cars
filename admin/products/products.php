@@ -1,10 +1,7 @@
 <?php
 include "../../src/database.php";
 
-const AVAILABILITY_UNAVAILABLE = 0;
-const AVAILABILITY_AVAILABLE = 1;
-const AVAILABILITY_RESERVED = 2;
-const AVAILABILITY_SOLD = 3;
+
 
 //echo '<pre>';
 //var_dump($_GET);
@@ -17,6 +14,8 @@ $form['data']['price'] = isset($_GET['price'])?$_GET['price']:'';
 $form['data']['availability'] = isset($_GET['availability'])?$_GET['availability']:'';
 $form['data']['description'] = isset($_GET['description'])?$_GET['description']:'';
 
+
+
 if (isset($_GET['id']) && $_GET['id'] != ''){
 
     $sql = "SELECT * FROM products WHERE id = ".$_GET['id'];
@@ -27,6 +26,8 @@ if (isset($_GET['id']) && $_GET['id'] != ''){
     unset($form['data']['product_code']);
 
 }
+
+
 
 if(isset($_GET['save']) && $_GET['save'] == true){
 

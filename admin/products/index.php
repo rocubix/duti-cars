@@ -1,3 +1,21 @@
+<?php
+include "../../src/database.php";
+
+const AVAILABILITY_UNAVAILABLE = 0;
+const AVAILABILITY_AVAILABLE = 1;
+const AVAILABILITY_RESERVED = 2;
+const AVAILABILITY_SOLD = 3;
+
+if ( isset($_GET['disable_id']) && $_GET['disable_id'] != "" ) {
+    $sql = "UPDATE products SET availability = '".AVAILABILITY_UNAVAILABLE."' WHERE id = " . $_GET['disable_id'];
+    $DB->query($sql);
+}
+
+$sql = $DB->query("SELECT * FROM products");
+$products = $sql->fetch_all(MYSQLI_ASSOC);
+
+
+?>
 <html>
 <head>
     <title>Admin</title>
@@ -7,7 +25,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/admin/main.css">
     <!------ Include the above in your HEAD tag ---------->
     <style>
-        #product_table tbody tr:hover{
+        #product_table tbody tr:hover {
             background-color: #ff25e9;
         }
     </style>
@@ -146,7 +164,9 @@
                 <div id="product_table" class="table-responsive">
                     <table class="table active">
                         <thead>
+
                         <tr>
+                            <th>ID</th>
                             <th>Product Code</th>
                             <th>Brand</th>
                             <th>Model</th>
@@ -155,18 +175,51 @@
                             <th>Actions</th>
                         </tr>
                         </thead>
+                        <?php
+                        foreach ($products as $product) {
+
+                            ?>
+                            <tr>
+                                <td><?= $product['id'] ?></td>
+                                <td><?= $product['product_code'] ?></td>
+                                <td><?= $product['brand'] ?></td>
+                                <td><?= $product['model'] ?></td>
+                                <td><?= $product['price'] ?></td>
+                                <td>
+                                    <?php
+                                    switch ($product['availability']) {
+                                        case AVAILABILITY_UNAVAILABLE:
+                                            echo "unavailable";
+                                            break;
+                                        case AVAILABILITY_AVAILABLE:
+                                            echo "available";
+                                            break;
+                                        case AVAILABILITY_RESERVED:
+                                            echo "reserved";
+                                            break;
+                                        case AVAILABILITY_SOLD:
+                                            echo "sold";
+                                            break;
+                                    }
+
+                                    ?></td>
+                                <td>
+                                    <a class="btn-link" href="/admin/products/products.php?id=<?= $product['id'] ?>">Edit</a>
+                                    <?php
+                                    if($product['availability'] == AVAILABILITY_AVAILABLE){
+                                        ?>
+                                        <a class="btn btn-danger" href="?disable_id=<?= $product['id'] ?>">Disable</a>
+                                    <?php
+                                    }
+                                    ?>
+
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
                         <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Anna</td>
-                            <td>Pitt</td>
-                            <td>35</td>
-                            <td>New York</td>
-                            <td>
-                                <a class="btn-link" href="/admin/products/products.php?id=1">Edit</a>
-                                <a class="btn btn-danger" href="?remove=1">Remove</a>
-                            </td>
-                        </tr>
+
                         </tbody>
                     </table>
                 </div>
