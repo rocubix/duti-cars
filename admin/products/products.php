@@ -316,8 +316,16 @@ if(isset($_GET['save']) && $_GET['save'] == true){
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="availability">Availability:</label>
+
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="availability" placeholder="" name="availability" value="<?= $form['data']['availability']?>">
+                            <select class="form-control" id="availability">
+                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Unavailable</option>
+                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Available</option>
+                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Reserved</option>
+                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Sold</option>
+                            </select>
+                               <input type="text" class="form-control" id="availability" placeholder="" name="availability" value= <?= $form['data']['availability']?>
+
                         </div>
                     </div>
 

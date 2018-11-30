@@ -6,13 +6,15 @@ const AVAILABILITY_AVAILABLE = 1;
 const AVAILABILITY_RESERVED = 2;
 const AVAILABILITY_SOLD = 3;
 
-if ( isset($_GET['disable_id']) && $_GET['disable_id'] != "" ) {
-    $sql = "UPDATE products SET availability = '".AVAILABILITY_UNAVAILABLE."' WHERE id = " . $_GET['disable_id'];
+$sql = $DB->query("SELECT * FROM products");
+$products = $sql->fetch_all(MYSQLI_ASSOC);
+
+if (isset($_GET['disable_id']) && $_GET['disable_id'] != "") {
+    $sql = "UPDATE products SET availability = '" . AVAILABILITY_UNAVAILABLE . "' WHERE id = " . $_GET['disable_id'];
     $DB->query($sql);
 }
 
-$sql = $DB->query("SELECT * FROM products");
-$products = $sql->fetch_all(MYSQLI_ASSOC);
+
 
 
 ?>
@@ -163,8 +165,7 @@ $products = $sql->fetch_all(MYSQLI_ASSOC);
 
                 <div id="product_table" class="table-responsive">
                     <table class="table active">
-                        <thead>
-
+                        <thead
                         <tr>
                             <th>ID</th>
                             <th>Product Code</th>
@@ -186,6 +187,7 @@ $products = $sql->fetch_all(MYSQLI_ASSOC);
                                 <td><?= $product['model'] ?></td>
                                 <td><?= $product['price'] ?></td>
                                 <td>
+
                                     <?php
                                     switch ($product['availability']) {
                                         case AVAILABILITY_UNAVAILABLE:
@@ -206,10 +208,10 @@ $products = $sql->fetch_all(MYSQLI_ASSOC);
                                 <td>
                                     <a class="btn-link" href="/admin/products/products.php?id=<?= $product['id'] ?>">Edit</a>
                                     <?php
-                                    if($product['availability'] == AVAILABILITY_AVAILABLE){
+                                    if ($product['availability'] == AVAILABILITY_AVAILABLE) {
                                         ?>
                                         <a class="btn btn-danger" href="?disable_id=<?= $product['id'] ?>">Disable</a>
-                                    <?php
+                                        <?php
                                     }
                                     ?>
 
