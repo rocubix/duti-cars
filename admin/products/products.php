@@ -324,7 +324,7 @@ if(isset($_GET['save']) && $_GET['save'] == true){
                                 <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Reserved</option>
                                 <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Sold</option>
                             </select>
-                               <input type="text" class="form-control" id="availability" placeholder="" name="availability" value= <?= $form['data']['availability']?>
+                               <!--<input type="text" class="form-control" id="availability" placeholder="" name="availability" value= --><?/*= $form['data']['availability']*/?>
 
                         </div>
                     </div>
