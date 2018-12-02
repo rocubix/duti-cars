@@ -1,6 +1,10 @@
 <?php
 include "../../src/database.php";
 
+const AVAILABILITY_UNAVAILABLE = 0;
+const AVAILABILITY_AVAILABLE = 1;
+const AVAILABILITY_RESERVED = 2;
+const AVAILABILITY_SOLD = 3;
 
 
 //echo '<pre>';
@@ -318,11 +322,11 @@ if(isset($_GET['save']) && $_GET['save'] == true){
                         <label class="control-label col-sm-2" for="availability">Availability:</label>
 
                         <div class="col-sm-10">
-                            <select class="form-control" id="availability">
-                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Unavailable</option>
-                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Available</option>
-                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Reserved</option>
-                                <option id="availability"  name="availability" value= <?= $form['data']['availability']?>>Sold</option>
+                            <select class="form-control" id="availability" name="availability"  >
+                                <option id="availability" value="<?= AVAILABILITY_UNAVAILABLE?>"<?=($form['data']['availability'] == AVAILABILITY_UNAVAILABLE)?' selected':'' ?>>Unavailable</option>
+                                <option id="availability" value="<?= AVAILABILITY_AVAILABLE?>"<?=($form['data']['availability'] == AVAILABILITY_AVAILABLE)?' selected':'' ?>>Available</option>
+                                <option id="availability" value="<?= AVAILABILITY_RESERVED?>"<?=($form['data']['availability'] == AVAILABILITY_RESERVED)?' selected':'' ?>>Reserved</option>
+                                <option id="availability" value="<?= AVAILABILITY_SOLD?>"<?=($form['data']['availability'] == AVAILABILITY_SOLD)?' selected':'' ?>>Sold</option>
                             </select>
                                <!--<input type="text" class="form-control" id="availability" placeholder="" name="availability" value= --><?/*= $form['data']['availability']*/?>
 
