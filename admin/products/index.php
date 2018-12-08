@@ -2,9 +2,9 @@
 include "../../src/database.php";
 
 const AVAILABILITY_UNAVAILABLE = 0;
-const AVAILABILITY_AVAILABLE = 1;
-const AVAILABILITY_RESERVED = 2;
-const AVAILABILITY_SOLD = 3;
+const AVAILABILITY_AVAILABLE = 1 ;
+const AVAILABILITY_RESERVED = 2 ;
+const AVAILABILITY_SOLD = 3 ;
 
 $sql = $DB->query("SELECT * FROM products");
 $products = $sql->fetch_all(MYSQLI_ASSOC);

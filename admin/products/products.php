@@ -11,18 +11,17 @@ const AVAILABILITY_SOLD = 3;
 //var_dump($_GET);
 //echo '</pre>';
 
-$form['data']['productCode'] = isset($_GET['productCode'])?$_GET['productCode']:'';
-$form['data']['brand'] = isset($_GET['brand'])?$_GET['brand']:'';
-$form['data']['model'] = isset($_GET['model'])?$_GET['model']:'';
-$form['data']['price'] = isset($_GET['price'])?$_GET['price']:'';
-$form['data']['availability'] = isset($_GET['availability'])?$_GET['availability']:'';
-$form['data']['description'] = isset($_GET['description'])?$_GET['description']:'';
+$form['data']['productCode'] = isset($_GET['productCode']) ? $_GET['productCode'] : '';
+$form['data']['brand'] = isset($_GET['brand']) ? $_GET['brand'] : '';
+$form['data']['model'] = isset($_GET['model']) ? $_GET['model'] : '';
+$form['data']['price'] = isset($_GET['price']) ? $_GET['price'] : '';
+$form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
+$form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
 
 
+if (isset($_GET['id']) && $_GET['id'] != '') {
 
-if (isset($_GET['id']) && $_GET['id'] != ''){
-
-    $sql = "SELECT * FROM products WHERE id = ".$_GET['id'];
+    $sql = "SELECT * FROM products WHERE id = " . $_GET['id'];
     $result = $DB->query($sql);
 
     $form['data'] = $result->fetch_assoc();
@@ -32,84 +31,83 @@ if (isset($_GET['id']) && $_GET['id'] != ''){
 }
 
 
+if (isset($_GET['save']) && $_GET['save'] == true) {
 
-if(isset($_GET['save']) && $_GET['save'] == true){
-
-    $form['data']['productCode'] = isset($_GET['productCode'])?$_GET['productCode']:'';
-    $form['data']['brand'] = isset($_GET['brand'])?$_GET['brand']:'';
-    $form['data']['model'] = isset($_GET['model'])?$_GET['model']:'';
-    $form['data']['price'] = isset($_GET['price'])?$_GET['price']:'';
-    $form['data']['availability'] = isset($_GET['availability'])?$_GET['availability']:'';
-    $form['data']['description'] = isset($_GET['description'])?$_GET['description']:'';
+    $form['data']['productCode'] = isset($_GET['productCode']) ? $_GET['productCode'] : '';
+    $form['data']['brand'] = isset($_GET['brand']) ? $_GET['brand'] : '';
+    $form['data']['model'] = isset($_GET['model']) ? $_GET['model'] : '';
+    $form['data']['price'] = isset($_GET['price']) ? $_GET['price'] : '';
+    $form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
+    $form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
 
     $form['success'] = false;
     $form['error'] = null;
 
-    if(
-        (isset($_GET['productCode']) && $_GET['productCode'] != '' ) &&
-        (isset($_GET['brand']) && $_GET['brand'] != '' ) &&
-        (isset($_GET['model']) && $_GET['model'] != '' ) &&
-        (isset($_GET['price']) && $_GET['price'] != '' ) &&
-        (isset($_GET['availability']) && $_GET['availability'] != '' )
-    ){
-        if(strlen($_GET['productCode']) == 8 ){
-            if(is_float((float)$_GET['price']) && $_GET['price'] > 0){
-                if (is_numeric($_GET['availability'])){
+    if (
+        (isset($_GET['productCode']) && $_GET['productCode'] != '') &&
+        (isset($_GET['brand']) && $_GET['brand'] != '') &&
+        (isset($_GET['model']) && $_GET['model'] != '') &&
+        (isset($_GET['price']) && $_GET['price'] != '') &&
+        (isset($_GET['availability']) && $_GET['availability'] != '')
+    ) {
+        if (strlen($_GET['productCode']) == 8) {
+            if (is_float((float)$_GET['price']) && $_GET['price'] > 0) {
+                if (is_numeric($_GET['availability'])) {
 //                    stripping special characters
-                    $form['data']['productCode'] = htmlspecialchars($form['data']['productCode'],ENT_QUOTES );
-                    $form['data']['brand'] = htmlspecialchars($form['data']['brand'],ENT_QUOTES );
-                    $form['data']['model'] = htmlspecialchars($form['data']['model'],ENT_QUOTES );
-                    $form['data']['description'] = htmlspecialchars($form['data']['description'],ENT_QUOTES );
-                    if (isset($form['data']['id']) && $form['data']['id'] != ''){
+                    $form['data']['productCode'] = htmlspecialchars($form['data']['productCode'], ENT_QUOTES);
+                    $form['data']['brand'] = htmlspecialchars($form['data']['brand'], ENT_QUOTES);
+                    $form['data']['model'] = htmlspecialchars($form['data']['model'], ENT_QUOTES);
+                    $form['data']['description'] = htmlspecialchars($form['data']['description'], ENT_QUOTES);
+                    if (isset($form['data']['id']) && $form['data']['id'] != '') {
 //                    updating database
                         $sql = "
                             UPDATE products
-                            SET product_code = '".$form['data']['productCode']."',
-                            brand = '".$form['data']['brand']."',
-                            model = '".$form['data']['model']."',
-                            price = '".$form['data']['price']."',
-                            availability = '".$form['data']['availability']."',
-                            description = '".$form['data']['description']."'
-                            WHERE id = ".$form['data']['id'].";
+                            SET product_code = '" . $form['data']['productCode'] . "',
+                            brand = '" . $form['data']['brand'] . "',
+                            model = '" . $form['data']['model'] . "',
+                            price = '" . $form['data']['price'] . "',
+                            availability = '" . $form['data']['availability'] . "',
+                            description = '" . $form['data']['description'] . "'
+                            WHERE id = " . $form['data']['id'] . ";
                             
                             ";
-                    }else{
+                    } else {
 //                    inserting into database
                         $sql = "INSERT INTO products VALUES (
                         null ,
-                        '".$form['data']['productCode']."',
-                        '".$form['data']['brand']."',
-                        '".$form['data']['model']."',
-                        '".str_replace(',','.',$form['data']['price'])."',
-                        '".$form['data']['availability']."',
-                        '".$form['data']['description']."',
+                        '" . $form['data']['productCode'] . "',
+                        '" . $form['data']['brand'] . "',
+                        '" . $form['data']['model'] . "',
+                        '" . str_replace(',', '.', $form['data']['price']) . "',
+                        '" . $form['data']['availability'] . "',
+                        '" . $form['data']['description'] . "',
                         null,
                         NOW()
                         );";
                     }
                     /** @var $DB mysqli */
-                    if($DB->query($sql)){
-                        if(!isset($form['data']['id'])){
+                    if ($DB->query($sql)) {
+                        if (!isset($form['data']['id'])) {
                             $form['data']['id'] = $DB->insert_id;
                             $form['message'] = "Succesfuly insterted into db";
-                        }else{
+                        } else {
                             $form['message'] = "Succesfuly updated into db";
                         }
-                        header('Location: /admin/products/products.php?id='.$form['data']['id']."&message=".$form['message']);
+                        header('Location: /admin/products/products.php?id=' . $form['data']['id'] . "&message=" . $form['message']);
                         $form['success'] = true;
-                    }else{
+                    } else {
                         $form['error'][] = mysqli_error($DB);
                     }
-                }else{
+                } else {
                     $form['error'][] = "the availability value is incorrect";
                 }
-            }else{
+            } else {
                 $form['error'][] = "the price in incorrect";
             }
-        }else{
+        } else {
             $form['error'][] = "the product code in incorrect";
         }
-    }else{
+    } else {
         $form['error'][] = "all required values must be filled";
     }
 }
@@ -245,26 +243,26 @@ if(isset($_GET['save']) && $_GET['save'] == true){
     <div class="col-xs-10 content">
 
         <?php
-            if(isset($_GET['message']) && $_GET['message']){
+        if (isset($_GET['message']) && $_GET['message']) {
+            ?>
+            <div class="alert alert-success" role="alert">
+                <span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                <?= $_GET['message'] ?>
+            </div>
+            <?php
+        }
+        if (isset($form['error'])) {
+            foreach ($form['error'] as $error) {
                 ?>
-                <div class="alert alert-success" role="alert">
-                    <span class="glyphicon glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                     <span class="sr-only">Error:</span>
-                    <?= $_GET['message'] ?>
+                    <?= $error ?>
                 </div>
-        <?php
+                <?php
             }
-            if(isset($form['error'])){
-                foreach ($form['error'] as $error){
-                    ?>
-                    <div class="alert alert-danger" role="alert">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Error:</span>
-                        <?= $error ?>
-                    </div>
-                    <?php
-                }
-            }
+        }
         ?>
 
         <div class="panel panel-default">
@@ -280,41 +278,45 @@ if(isset($_GET['save']) && $_GET['save'] == true){
                     proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
                 <form class="form-horizontal">
-<!--                    <input type="hidden" name="characteristics[]">-->
-<!--                    <input type="hidden" name="characteristics[]">-->
+                    <!--                    <input type="hidden" name="characteristics[]">-->
+                    <!--                    <input type="hidden" name="characteristics[]">-->
                     <?php
-                    if(isset($form['data']['id']) && $form['data']['id'] !=''){
+                    if (isset($form['data']['id']) && $form['data']['id'] != '') {
                         ?>
                         <input type="hidden" name="id" value="<?= $form['data']['id'] ?>">
-                    <?php
+                        <?php
                     }
                     ?>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="productCode">Product Code:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="productCode" placeholder="" name="productCode" value="<?= $form['data']['productCode'] ?>">
+                            <input type="text" class="form-control" id="productCode" placeholder="" name="productCode"
+                                   value="<?= $form['data']['productCode'] ?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="brand">Brand:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="brand" placeholder="" name="brand" value="<?= $form['data']['brand']?>">
+                            <input type="text" class="form-control" id="brand" placeholder="" name="brand"
+                                   value="<?= $form['data']['brand'] ?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="model">Model:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="model" placeholder="" name="model" value="<?= $form['data']['model']?>">
+                            <input type="text" class="form-control" id="model" placeholder="" name="model"
+                                   value="<?= $form['data']['model'] ?>">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="price">Price:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="price" placeholder="" name="price" value="<?= $form['data']['price']?>">
+                            <input type="text" class="form-control" id="price" placeholder="" name="price"
+                                   value="<?= $form['data']['price'] ?>">
                         </div>
                     </div>
 
@@ -322,13 +324,25 @@ if(isset($_GET['save']) && $_GET['save'] == true){
                         <label class="control-label col-sm-2" for="availability">Availability:</label>
 
                         <div class="col-sm-10">
-                            <select class="form-control" id="availability" name="availability"  >
-                                <option id="availability" value="<?= AVAILABILITY_UNAVAILABLE?>"<?=($form['data']['availability'] == AVAILABILITY_UNAVAILABLE)?' selected':'' ?>>Unavailable</option>
-                                <option id="availability" value="<?= AVAILABILITY_AVAILABLE?>"<?=($form['data']['availability'] == AVAILABILITY_AVAILABLE)?' selected':'' ?>>Available</option>
-                                <option id="availability" value="<?= AVAILABILITY_RESERVED?>"<?=($form['data']['availability'] == AVAILABILITY_RESERVED)?' selected':'' ?>>Reserved</option>
-                                <option id="availability" value="<?= AVAILABILITY_SOLD?>"<?=($form['data']['availability'] == AVAILABILITY_SOLD)?' selected':'' ?>>Sold</option>
+                            <select class="form-control" id="availability" name="availability">
+                                <option id="availability"
+                                        value="<?= AVAILABILITY_UNAVAILABLE ?>"<?= ($form['data']['availability'] == AVAILABILITY_UNAVAILABLE) ? ' selected' : '' ?>>
+                                    Unavailable
+                                </option>
+                                <option id="availability"
+                                        value="<?= AVAILABILITY_AVAILABLE ?>"<?= ($form['data']['availability'] == AVAILABILITY_AVAILABLE) ? ' selected' : '' ?>>
+                                    Available
+                                </option>
+                                <option id="availability"
+                                        value="<?= AVAILABILITY_RESERVED ?>"<?= ($form['data']['availability'] == AVAILABILITY_RESERVED) ? ' selected' : '' ?>>
+                                    Reserved
+                                </option>
+                                <option id="availability"
+                                        value="<?= AVAILABILITY_SOLD ?>"<?= ($form['data']['availability'] == AVAILABILITY_SOLD) ? ' selected' : '' ?>>
+                                    Sold
+                                </option>
                             </select>
-                               <!--<input type="text" class="form-control" id="availability" placeholder="" name="availability" value= --><?/*= $form['data']['availability']*/?>
+                            <!--<input type="text" class="form-control" id="availability" placeholder="" name="availability" value= --><? /*= $form['data']['availability']*/ ?>
 
                         </div>
                     </div>
@@ -336,13 +350,118 @@ if(isset($_GET['save']) && $_GET['save'] == true){
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="description">Description:</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control" rows="5" id="description" name="description"><?= $form['data']['description']?></textarea>
+                            <textarea class="form-control" rows="5" id="description"
+                                      name="description"><?= $form['data']['description'] ?></textarea>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button type="submit" class="btn btn-default" name="save" value="true">Submit</button>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Add/Edit Characteristics
+                        </div>
+                        <div class="panel-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </p>
+                            <form class="form-horizontal">
+                                <input type="hidden" name="id" value="">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="product_id">Product ID:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="product_id" placeholder=""
+                                               name="product_id" value="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="name">Name:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="name" placeholder="" name="name"
+                                               value="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="title">Title:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="title" placeholder="" name="title"
+                                               value="">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Add/Edit Features
+                        </div>
+                        <div class="panel-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </p>
+                            <form class="form-horizontal">
+                                <input type="hidden" name="id" value="">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="product_id">Product ID:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="product_id" placeholder=""
+                                               name="product_id" value="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="name">Name:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="name" placeholder="" name="name"
+                                               value="">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Add/Edit Images
+                        </div>
+                        <div class="panel-body">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </p>
+                            <form class="form-horizontal">
+                                <input type="hidden" name="id" value="">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="product_id">Product ID:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="product_id" placeholder=""
+                                               name="product_id" value="">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="name">Name:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="name" placeholder="" name="name"
+                                               value="">
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </form>

@@ -67,7 +67,7 @@
                             <ul class="nav navbar-nav">
                                 <li class="active"><a href="/admin/products/index.php"><span class="glyphicon glyphicon-dashboard"></span> Products</a>
                                 </li>
-                                <li><a href="/admin/products/index.php"><span class="glyphicon glyphicon-plane"></span> Images</a></li>
+                                <li><a href="/admin/images/index.php"><span class="glyphicon glyphicon-plane"></span> Images</a></li>
                                 <li><a href="/admin/features/index.php"><span class="glyphicon glyphicon-cloud"></span> Features</a></li>
                                 <li><a href="/admin/characteristics/index.php"><span class="glyphicon glyphicon-cloud"></span> Characteristics</a></li>
                                 <li><a href="/admin/reservations/index.php"><span class="glyphicon glyphicon-cloud"></span> Reservations</a></li>
