@@ -12,12 +12,16 @@ const AVAILABILITY_SOLD = 3;
 //var_dump($_GET);
 //echo '</pre>';
 
+//die();
+
 $form['data']['productCode'] = isset($_GET['productCode']) ? $_GET['productCode'] : '';
 $form['data']['brand'] = isset($_GET['brand']) ? $_GET['brand'] : '';
 $form['data']['model'] = isset($_GET['model']) ? $_GET['model'] : '';
 $form['data']['price'] = isset($_GET['price']) ? $_GET['price'] : '';
 $form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
 $form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
+
+//$form['data']['characteristics'] = isset($_GET['characteristics']) ? $_GET['characteristics'] : '';
 
 
 if (isset($_GET['id']) && $_GET['id'] != '') {
@@ -41,9 +45,13 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     $form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
     $form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
 
-    $form['success'] = false;
+//    $form['data']['characteristics'] = isset($_GET['characteristics']) ? $_GET['characteristics'] : '';
+
+    $form['success'] = true;
     $form['error'] = null;
 
+
+    //Check if product values are correct.
     if (
         (isset($_GET['productCode']) && $_GET['productCode'] != '') &&
         (isset($_GET['brand']) && $_GET['brand'] != '') &&
@@ -52,87 +60,120 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
         (isset($_GET['availability']) && $_GET['availability'] != '')
     ) {
         if (strlen($_GET['productCode']) == 8) {
-            if (is_float((float)$_GET['price']) && $_GET['price'] > 0) {
+            if (is_numeric($_GET['price']) && $_GET['price'] > 0) {
                 if (is_numeric($_GET['availability'])) {
-//                    stripping special characters
-                    $form['data']['productCode'] = htmlspecialchars($form['data']['productCode'], ENT_QUOTES);
-                    $form['data']['brand'] = htmlspecialchars($form['data']['brand'], ENT_QUOTES);
-                    $form['data']['model'] = htmlspecialchars($form['data']['model'], ENT_QUOTES);
-                    $form['data']['description'] = htmlspecialchars($form['data']['description'], ENT_QUOTES);
-                    if (isset($form['data']['id']) && $form['data']['id'] != '') {
-//                    updating database
-                        $sql = "
-                            UPDATE products
-                            SET product_code = '" . $form['data']['productCode'] . "',
-                            brand = '" . $form['data']['brand'] . "',
-                            model = '" . $form['data']['model'] . "',
-                            price = '" . $form['data']['price'] . "',
-                            availability = '" . $form['data']['availability'] . "',
-                            description = '" . $form['data']['description'] . "'
-                            WHERE id = " . $form['data']['id'] . ";
-                            
-                            ";
-                    } else {
-//                    inserting into database
-                        $sql = "INSERT INTO products VALUES (
-                        null ,
-                        '" . $form['data']['productCode'] . "',
-                        '" . $form['data']['brand'] . "',
-                        '" . $form['data']['model'] . "',
-                        '" . str_replace(',', '.', $form['data']['price']) . "',
-                        '" . $form['data']['availability'] . "',
-                        '" . $form['data']['description'] . "',
-                        null,
-                        NOW()
-                        );";
-                    }
-                    /** @var $DB mysqli */
-                    if ($DB->query($sql)) {
-                        if (!isset($form['data']['id'])) {
-                            $form['data']['id'] = $DB->insert_id;
-                            $form['message'] = "Succesfuly insterted into db";
-                        } else {
-                            $form['message'] = "Succesfuly updated into db";
-                        }
-                        header('Location: /admin/products/products.php?id=' . $form['data']['id'] . "&message=" . $form['message']);
-                        $form['success'] = true;
-                    } else {
-                        $form['error'][] = mysqli_error($DB);
-                    }
+                    //this is empty moved in form $success
                 } else {
                     $form['error'][] = "the availability value is incorrect";
+                    $form['success'] = false;
                 }
             } else {
                 $form['error'][] = "the price in incorrect";
+                $form['success'] = false;
             }
         } else {
             $form['error'][] = "the product code in incorrect";
+            $form['success'] = false;
         }
     } else {
         $form['error'][] = "all required values must be filled";
+        $form['success'] = false;
     }
-}
 
-//add characteristics
+    //TODO[rocubix]: Check if all inserted characteristics are correct.
+    //NOTE CHECK ALL CHARACTERISTICS
 
-if(isset($_GET['id']) && $_GET['id'] != ''){
-$id = $_GET['id'];
-
-
-if(isset($_GET['add']) && $_GET['add'] == true){
-    if(isset($_GET['name']) && isset($_GET['title'] )){
-
-        $_name = $_GET['name'];
-        $_title = $_GET['title'];
-        $sql = "INSERT INTO characteristics VALUES (null ,null ,'$_name', '$_title')";
-        $DB->query($sql);
+    /*
+    foreach ($form['data']['characteristics'] as $characteristic){
+        //verificari pe fiecare
     }
-}
-if(is_numeric($id)){
-    $sql = "SELECT * FROM characteristics WHERE product_id = $id";
-    $result = $DB->query($sql);
-    $_characteristics = $result->fetch_assoc();
-}
+    */
+
+    //TODO[rocubix]: Check if all inserted features are correct.
+    //NOTE CHECK ALL FEATURES
+
+    /*
+    foreach ($form['data']['features'] as $feature){
+        //verificari pe fiecare
+    }
+    */
+
+
+    //Inserting Product into database
+    if($form['success'] == true){
+//      stripping special characters
+        $form['data']['productCode'] = htmlspecialchars($form['data']['productCode'], ENT_QUOTES);
+        $form['data']['brand'] = htmlspecialchars($form['data']['brand'], ENT_QUOTES);
+        $form['data']['model'] = htmlspecialchars($form['data']['model'], ENT_QUOTES);
+        $form['data']['description'] = htmlspecialchars($form['data']['description'], ENT_QUOTES);
+        if (isset($form['data']['id']) && $form['data']['id'] != '') {
+//          updating database
+            $sql = "
+                UPDATE products
+                SET product_code = '" . $form['data']['productCode'] . "',
+                brand = '" . $form['data']['brand'] . "',
+                model = '" . $form['data']['model'] . "',
+                price = '" . $form['data']['price'] . "',
+                availability = '" . $form['data']['availability'] . "',
+                description = '" . $form['data']['description'] . "'
+                WHERE id = " . $form['data']['id'] . ";
+                
+                ";
+        } else {
+//          inserting into database
+            $sql = "INSERT INTO products VALUES (
+                null ,
+                '" . $form['data']['productCode'] . "',
+                '" . $form['data']['brand'] . "',
+                '" . $form['data']['model'] . "',
+                '" . str_replace(',', '.', $form['data']['price']) . "',
+                '" . $form['data']['availability'] . "',
+                '" . $form['data']['description'] . "',
+                null,
+                NOW()
+                );";
+        }
+        //Check if product query execution is successful
+        /** @var $DB mysqli */
+        if ($DB->query($sql)) {
+            if (!isset($form['data']['id'])) {
+                $form['data']['id'] = $DB->insert_id;
+                $form['message'] = "Succesfuly insterted into db";
+            } else {
+                //add new characteristics in db
+                $form['message'] = "Succesfuly updated into db";
+            }
+        } else {
+            $form['error'][] = mysqli_error($DB);
+            $form['success'] = false;
+        }
+    }
+
+    if($form['success'] == true){
+        //TODO[rocubix]: Inserting Characteristics into database.
+        //NOTE CHECK ALL CHARACTERISTICS
+
+        /*
+        foreach ($form['data']['characteristics'] as $characteristic){
+            //verificari pe fiecare
+        }
+        */
+    }
+
+    if($form['success'] == true){
+        //TODO[rocubix]: Inserting Features into database.
+        //NOTE CHECK ALL FEATURES
+
+        /*
+        foreach ($form['data']['features'] as $feature){
+            //verificari pe fiecare
+        }
+        */
+    }
+
+    if($form['success'] == true){
+        header('Location: /admin/products/products.php?id=' . $form['data']['id'] . "&message=" . $form['message']);
+    }
 }
 
 
@@ -302,8 +343,7 @@ if(is_numeric($id)){
                     proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
                 <form class="form-horizontal">
-                    <!--                    <input type="hidden" name="characteristics[]">-->
-                    <!--                    <input type="hidden" name="characteristics[]">-->
+
                     <?php
                     if (isset($form['data']['id']) && $form['data']['id'] != '') {
                         ?>
@@ -371,6 +411,98 @@ if(is_numeric($id)){
                         </div>
                     </div>
 
+<!--                    CHARACTERISTICS-->
+
+                    <div class="form-group characteristics">
+                        <label class="control-label col-sm-2" for="availability">Characteristics:</label>
+                        <div class="col-sm-10">
+
+                            <?php
+
+                            /*
+                             foreach ($form['data']['characteristics'] as $characteristic){
+
+                            }
+                             */
+
+
+
+                            ?>
+
+                            <div class="row characteristic">
+                                <input type="hidden" name="characteristics[0][id]" value="">
+                                <div class="col-sm-9 values">
+                                    <span>Name</span>
+                                    <input type="text" class="form-control" placeholder="" name="characteristics[0][name]" value="">
+                                    <span>Value</span>
+                                    <input type="text" class="form-control" placeholder="" name="characteristics[0][value]" value="">
+                                </div>
+                                <div class="col-sm-3 actions">
+                                    <button type="button" class="btn btn-danger remove_characteristic" name="remove" value="true">Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="row characteristic">
+                                <input type="hidden" name="characteristics[0][id]" value="">
+                                <div class="col-sm-9 values">
+                                    <span>Name</span>
+                                    <input type="text" class="form-control" placeholder="" name="characteristics[1][name]" value="">
+                                    <span>Value</span>
+                                    <input type="text" class="form-control" placeholder="" name="characteristics[1][value]" value="">
+                                </div>
+                                <div class="col-sm-3 actions">
+                                    <button type="button" class="btn btn-danger remove_characteristic" name="remove" value="true">Remove</button>
+                                </div>
+                            </div>
+
+
+
+
+
+                        </div>
+                        <div class="col-sm-offset-10 col-sm-2">
+                            <button type="button" class="btn pull-right" id="add_characteristic" name="add" value="true">Add</button>
+                        </div>
+
+                    </div>
+
+
+<!--                    FEATURES-->
+
+                    <div class="form-group features">
+                        <label class="control-label col-sm-2" for="availability">Features:</label>
+                        <div class="col-sm-10">
+
+                            <div class="row feature">
+                                <input type="hidden" name="features[0][id]" value="">
+                                <div class="col-sm-9 values">
+                                    <span>Name</span>
+                                    <input type="text" class="form-control" id="features[0][name]" placeholder="" name="features[0][name]" value="">
+                                </div>
+                                <div class="col-sm-3 actions">
+                                    <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>
+                                </div>
+                            </div>
+
+                            <div class="row feature">
+                                <input type="hidden" name="features[0][id]" value="">
+                                <div class="col-sm-9 values">
+                                    <span>Name</span>
+                                    <input type="text" class="form-control" id="features[0][name]" placeholder="" name="features[1][name]" value="">
+                                </div>
+                                <div class="col-sm-3 actions">
+                                    <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-offset-10 col-sm-2">
+                            <button type="button" class="btn pull-right" id="add_feature" name="add" value="true">Add</button>
+                        </div>
+                    </div>
+
+
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="description">Description:</label>
                         <div class="col-sm-10">
@@ -385,61 +517,6 @@ if(is_numeric($id)){
                     </div>
                 </form>
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Add/Edit Characteristics
-                        </div>
-                        <div class="panel-body">
-
-                            <form class="form-inline">
-                                <input type="hidden" name="id" value="">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2" for="name" >Name:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" placeholder=""
-                                               name="name" value="<?=$_name['name'] ?>">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2" for="title">Title:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="title" placeholder="" name="title"
-                                               value="<?=$_title['title'] ?>">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn" name="add" value="true">Add</button>
-                                    <button type="button" class="btn btn-danger" name="remove" value="true">Remove</button>
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Add/Edit Features
-                        </div>
-                        <div class="panel-body">
-
-                            <form class="form-inline">
-                                <input type="hidden" name="id" value="">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2" for="name">Name:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" placeholder=""
-                                               name="name" value="">
-                                    </div>
-                                </div>
-
-
-                                <div class="form-group">
-                                    <button type="button" class="btn">Add</button>
-                                    <button type="button" class="btn btn-danger">Remove</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             Add/Edit Images
@@ -478,6 +555,58 @@ if(is_numeric($id)){
 
 <!--    scripts-->
 <script>
+
+
+    var no_of_characteristics = <?= 0 ?>;
+    var no_of_features = <?= 0 ?>;
+
+    var new_characteristic_html = '<div class="row characteristic">\n' +
+        '                                <input type="hidden" name="characteristics[99][id]" value="">\n' +
+        '                                <div class="col-sm-9 values">\n' +
+        '                                    <span>Name</span>\n' +
+        '                                    <input type="text" class="form-control" placeholder="" name="characteristics[99][name]" value="">\n' +
+        '                                    <span>Value</span>\n' +
+        '                                    <input type="text" class="form-control" placeholder="" name="characteristics[99][value]" value="">\n' +
+        '                                </div>\n' +
+        '                                <div class="col-sm-3 actions">\n' +
+        '                                    <button type="button" class="btn btn-danger remove_characteristic" name="remove" value="true">Remove</button>\n' +
+        '                                </div>\n' +
+        '                            </div>';
+
+    var new_feature_html = '<div class="row feature">\n' +
+        '                                <input type="hidden" name="features[0][id]" value="">\n' +
+        '                                <div class="col-sm-9 values">\n' +
+        '                                    <span>Name</span>\n' +
+        '                                    <input type="text" class="form-control" id="features[0][name]" placeholder="" name="features[0][name]" value="">\n' +
+        '                                </div>\n' +
+        '                                <div class="col-sm-3 actions">\n' +
+        '                                    <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>\n' +
+        '                                </div>\n' +
+        '                            </div>';
+
+    $(function () {
+        addRemoveAbility()
+        $('#add_characteristic').click(function () {
+            $('.characteristics .col-sm-10').append(new_characteristic_html);
+            addRemoveAbility();
+        })
+        $('#add_feature').click(function () {
+            $('.features .col-sm-10').append(new_feature_html)
+            addRemoveAbility();
+        })
+    });
+
+    function addRemoveAbility(){
+        $('.remove_characteristic').click(function () {
+            $(this).parent().parent().remove()
+        })
+
+        $('.remove_feature').click(function () {
+            $(this).parent().parent().remove()
+        })
+    }
+
+
     $(function () {
         $('.navbar-toggle-sidebar').click(function () {
             $('.navbar-nav').toggleClass('slide-in');
