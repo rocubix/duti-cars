@@ -93,7 +93,7 @@ if (isset($_GET['disable_id']) && $_GET['disable_id'] != "") {
                             <li class="active"><a href="/admin/products/index.php"><span
                                             class="glyphicon glyphicon-dashboard"></span> Products</a>
                             </li>
-                            <li><a href="/admin/products/index.php"><span class="glyphicon glyphicon-plane"></span>
+                            <li><a href="/admin/images/index.php"><span class="glyphicon glyphicon-plane"></span>
                                     Images</a></li>
                             <li><a href="/admin/features/index.php"><span class="glyphicon glyphicon-cloud"></span>
                                     Features</a></li>

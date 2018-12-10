@@ -267,7 +267,7 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                             value="<?= AVAILABILITY_SOLD ?>"<?= ($form['data']['availability'] == AVAILABILITY_SOLD) ? ' selected' : '' ?>>
                         Sold
                     </option>
-                    <option id="availability" value="4" selected=selected > Availability... </option>
+                    <option id="availability" selected=selected > Availability... </option>
                 </select>
             </div>
             <div class="col-sm-10">

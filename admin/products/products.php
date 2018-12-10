@@ -1,6 +1,7 @@
 <?php
 include "../../src/database.php";
 
+
 const AVAILABILITY_UNAVAILABLE = 0;
 const AVAILABILITY_AVAILABLE = 1;
 const AVAILABILITY_RESERVED = 2;
@@ -112,6 +113,29 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     }
 }
 
+//add characteristics
+
+if(isset($_GET['id']) && $_GET['id'] != ''){
+$id = $_GET['id'];
+
+
+if(isset($_GET['add']) && $_GET['add'] == true){
+    if(isset($_GET['name']) && isset($_GET['title'] )){
+
+        $_name = $_GET['name'];
+        $_title = $_GET['title'];
+        $sql = "INSERT INTO characteristics VALUES (null ,null ,'$_name', '$_title')";
+        $DB->query($sql);
+    }
+}
+if(is_numeric($id)){
+    $sql = "SELECT * FROM characteristics WHERE product_id = $id";
+    $result = $DB->query($sql);
+    $_characteristics = $result->fetch_assoc();
+}
+}
+
+
 //echo '<pre>';
 //var_dump($form);
 //echo '</pre>';
@@ -190,7 +214,7 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                             </li>
                             <li><a href="/admin/products/index.php"><span class="glyphicon glyphicon-plane"></span>
                                     Images</a></li>
-                            <li><a href="/admin/features/index.php"><span class="glyphicon glyphicon-cloud"></span>
+                            <li><a href="/admin/images/index.php"><span class="glyphicon glyphicon-cloud"></span>
                                     Features</a></li>
                             <li><a href="/admin/characteristics/index.php"><span
                                             class="glyphicon glyphicon-cloud"></span> Characteristics</a></li>
@@ -354,39 +378,26 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                       name="description"><?= $form['data']['description'] ?></textarea>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button type="submit" class="btn btn-default" name="save" value="true">Submit</button>
                         </div>
                     </div>
+                </form>
+
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             Add/Edit Characteristics
                         </div>
                         <div class="panel-body">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </p>
-                            <form class="form-horizontal">
+
+                            <form class="form-inline">
                                 <input type="hidden" name="id" value="">
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="product_id">Product ID:</label>
+                                    <label class="control-label col-sm-2" for="name" >Name:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="product_id" placeholder=""
-                                               name="product_id" value="">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2" for="name">Name:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" placeholder="" name="name"
-                                               value="">
+                                        <input type="text" class="form-control" id="name" placeholder=""
+                                               name="name" value="<?=$_name['name'] ?>">
                                     </div>
                                 </div>
 
@@ -394,9 +405,14 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                     <label class="control-label col-sm-2" for="title">Title:</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="title" placeholder="" name="title"
-                                               value="">
+                                               value="<?=$_title['title'] ?>">
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn" name="add" value="true">Add</button>
+                                    <button type="button" class="btn btn-danger" name="remove" value="true">Remove</button>
+                                </div>
+
                             </form>
                         </div>
                     </div>
@@ -405,29 +421,21 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                             Add/Edit Features
                         </div>
                         <div class="panel-body">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </p>
-                            <form class="form-horizontal">
-                                <input type="hidden" name="id" value="">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2" for="product_id">Product ID:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="product_id" placeholder=""
-                                               name="product_id" value="">
-                                    </div>
-                                </div>
 
+                            <form class="form-inline">
+                                <input type="hidden" name="id" value="">
                                 <div class="form-group">
                                     <label class="control-label col-sm-2" for="name">Name:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" placeholder="" name="name"
-                                               value="">
+                                        <input type="text" class="form-control" id="name" placeholder=""
+                                               name="name" value="">
                                     </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <button type="button" class="btn">Add</button>
+                                    <button type="button" class="btn btn-danger">Remove</button>
                                 </div>
                             </form>
                         </div>
@@ -437,31 +445,23 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                             Add/Edit Images
                         </div>
                         <div class="panel-body">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </p>
-                            <form class="form-horizontal">
+
+                            <form class="form-inline">
                                 <input type="hidden" name="id" value="">
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="product_id">Product ID:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="product_id" placeholder=""
-                                               name="product_id" value="">
+                                    <div class="col-xs-4">
+                                        <img src="https://www.w3schools.com/html/workplace.jpg" class="img-responsive">
                                     </div>
                                 </div>
-
                                 <div class="form-group">
-                                    <label class="control-label col-sm-2" for="name">Name:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="name" placeholder="" name="name"
-                                               value="">
-                                    </div>
+                                <button type="button" class="btn btn-danger">Remove</button>
                                 </div>
                             </form>
+                            <div class="form-group">
+                                <button type="button" class="btn">Brouse</button>
+                                <button type="button" class="btn btn-danger">Upload</button>
+                            </div>
+
                         </div>
                     </div>
                 </form>
