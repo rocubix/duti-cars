@@ -7,11 +7,11 @@ const AVAILABILITY_AVAILABLE = 1;
 const AVAILABILITY_RESERVED = 2;
 const AVAILABILITY_SOLD = 3;
 
-
+//
 //echo '<pre>';
 //var_dump($_GET);
 //echo '</pre>';
-
+//
 //die();
 
 $form['data']['productCode'] = isset($_GET['productCode']) ? $_GET['productCode'] : '';
@@ -21,17 +21,40 @@ $form['data']['price'] = isset($_GET['price']) ? $_GET['price'] : '';
 $form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
 $form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
 
-//$form['data']['characteristics'] = isset($_GET['characteristics']) ? $_GET['characteristics'] : '';
+//retiving info from web page!
 
+if(isset($_GET['characteristics'])){
+    foreach ($_GET['characteristics'] as $characteristic){
+        $form['data']['characteristics'][] = $characteristic;
+    }
+}
+
+if(isset($_GET['features'])){
+    foreach ($_GET['features'] as $feature){
+        $form['data']['features'][] = $feature;
+    }
+}
 
 if (isset($_GET['id']) && $_GET['id'] != '') {
 
     $sql = "SELECT * FROM products WHERE id = " . $_GET['id'];
     $result = $DB->query($sql);
 
-    $form['data'] = $result->fetch_assoc();
-    $form['data']['productCode'] = $form['data']['product_code'];
-    unset($form['data']['product_code']);
+    if($result && $result->num_rows){
+        $form['data'] = $result->fetch_assoc();
+        $form['data']['productCode'] = $form['data']['product_code'];
+        unset($form['data']['product_code']);
+
+        $sql = "SELECT * FROM characteristics WHERE product_id = " . $_GET['id'];
+        $result = $DB->query($sql);
+        $form['data']['characteristics'] = $result->fetch_all(MYSQLI_ASSOC);
+
+        $sql = "SELECT * FROM features WHERE product_id = " . $_GET['id'];
+        $result = $DB->query($sql);
+        $form['data']['features'] = $result->fetch_all(MYSQLI_ASSOC);
+    }else{
+        $form['error'][] = 'Warning your id is invalid! You either copied a wrong link or you destroyed the integrity of the database!';
+    }
 
 }
 
@@ -45,7 +68,9 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     $form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
     $form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
 
-//    $form['data']['characteristics'] = isset($_GET['characteristics']) ? $_GET['characteristics'] : '';
+    $form['data']['characteristics'] = isset($_GET['characteristics']) ? $_GET['characteristics'] : '';
+
+    $form['data']['features'] = isset($_GET['features']) ? $_GET['features'] : '';
 
     $form['success'] = true;
     $form['error'] = null;
@@ -150,25 +175,76 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     }
 
     if($form['success'] == true){
-        //TODO[rocubix]: Inserting Characteristics into database.
-        //NOTE CHECK ALL CHARACTERISTICS
+        $form['data']['characteristics'] = htmlspecialchars($form['data']['characteristics'], ENT_QUOTES);
+        if (isset($form['data']['characteristics'])){
+            foreach ($form['data']['characteristics'] as $characteristic){
+                if (isset($characteristic['name']) && $characteristic['name'] != '') {
+                    if (isset($characteristic['title']) && $characteristic['title'] != '') {
+                        if (isset($characteristic['id']) && $characteristic['id'] != ''){
+                            // update db
+                            $sql = "
+                            UPDATE characteristics
+                            SET name = '" . $characteristic['name'] . "',
+                            title = '" . $characteristic['title'] . "'
 
-        /*
-        foreach ($form['data']['characteristics'] as $characteristic){
-            //verificari pe fiecare
+                            WHERE id = " . $characteristic['id'] . ";
+                            
+                            ";
+                        }else{
+                            //insert data into db
+                            $sql = "INSERT INTO characteristics VALUES (
+                            null ,
+                            '" . $form['data']['id'] . "' ,
+                            '" . $characteristic['name'] . "',
+                            '" . $characteristic['title'] . "'
+                            );";
+                        }
+                        /** @var $DB mysqli */
+                        if (!$DB->query($sql)) {
+                            $form['warning'][]= "caracteristica nu a putut fi inserata in baza de date!";
+                        }
+                    }else{
+                        $form['warning'][]= "valoarea este gresita!";
+                    }
+                }else{
+                    $form['warning'][]= "numele este gresit!";
+                };
+            }
         }
-        */
     }
 
     if($form['success'] == true){
-        //TODO[rocubix]: Inserting Features into database.
-        //NOTE CHECK ALL FEATURES
+        $form['data']['features'] = htmlspecialchars($form['data']['features'], ENT_QUOTES);
+        if (isset($form['data']['features'])){
+            foreach ($form['data']['features'] as $feature){
+                if (isset($feature['name']) && $feature['name'] != '') {
+                        if (isset($feature['id']) && $feature['id'] != ''){
+                            // update db
+                            $sql = "
+                            UPDATE features
+                            SET name = '" . $feature['name'] . "'
 
-        /*
-        foreach ($form['data']['features'] as $feature){
-            //verificari pe fiecare
+                            WHERE id = " . $feature['id'] . ";
+                            
+                            ";
+                        }else{
+                            //insert data into db
+                            $sql = "INSERT INTO features VALUES (
+                            null ,
+                            '" . $form['data']['id'] . "' ,
+                            '" . $feature['name'] . "'
+                            );";
+
+                        }
+                        /** @var $DB mysqli */
+                        if (!$DB->query($sql)) {
+                            $form['warning'][]= "featur-ul nu a putut fi inserata in baza de date!";
+                        }
+                    }else{
+                        $form['warning'][]= "featur-ul este gresit!";
+                    };
+            }
         }
-        */
     }
 
     if($form['success'] == true){
@@ -419,36 +495,43 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
 
                             <?php
 
-                            /*
-                             foreach ($form['data']['characteristics'] as $characteristic){
-
+                            $number_of_characteristics = 0;
+                            if (isset($form['data']['characteristics'])) {
+                                foreach ($form['data']['characteristics'] as $count => $characteristic) {
+                                    $number_of_characteristics = $count;
+                                    ?>
+                                    <div class="row characteristic">
+                                        <input type="hidden" name="characteristics[<?= $count ?>][id]"
+                                               value="<?= $characteristic['id'] ?>">
+                                        <div class="col-sm-9 values">
+                                            <span>Name</span>
+                                            <input type="text" class="form-control" placeholder=""
+                                                   name="characteristics[<?= $count ?>][name] "
+                                                   value="<?= $characteristic['name'] ?>">
+                                            <span>Value</span>
+                                            <input type="text" class="form-control" placeholder=""
+                                                   name="characteristics[<?= $count ?>][title]"
+                                                   value="<?= $characteristic['title'] ?>">
+                                        </div>
+                                        <div class="col-sm-3 actions">
+                                            <button type="button" class="btn btn-danger remove_characteristic"
+                                                    name="remove" value="true">Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
                             }
-                             */
-
-
-
                             ?>
 
-                            <div class="row characteristic">
-                                <input type="hidden" name="characteristics[0][id]" value="">
-                                <div class="col-sm-9 values">
-                                    <span>Name</span>
-                                    <input type="text" class="form-control" placeholder="" name="characteristics[0][name]" value="">
-                                    <span>Value</span>
-                                    <input type="text" class="form-control" placeholder="" name="characteristics[0][value]" value="">
-                                </div>
-                                <div class="col-sm-3 actions">
-                                    <button type="button" class="btn btn-danger remove_characteristic" name="remove" value="true">Remove</button>
-                                </div>
-                            </div>
+
 
                             <div class="row characteristic">
-                                <input type="hidden" name="characteristics[0][id]" value="">
                                 <div class="col-sm-9 values">
                                     <span>Name</span>
-                                    <input type="text" class="form-control" placeholder="" name="characteristics[1][name]" value="">
+                                    <input type="text" class="form-control" placeholder="" name="characteristics[<?=$number_of_characteristics+1?>][name]" value="">
                                     <span>Value</span>
-                                    <input type="text" class="form-control" placeholder="" name="characteristics[1][value]" value="">
+                                    <input type="text" class="form-control" placeholder="" name="characteristics[<?=$number_of_characteristics+1?>][title]" value="">
                                 </div>
                                 <div class="col-sm-3 actions">
                                     <button type="button" class="btn btn-danger remove_characteristic" name="remove" value="true">Remove</button>
@@ -472,23 +555,42 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                     <div class="form-group features">
                         <label class="control-label col-sm-2" for="availability">Features:</label>
                         <div class="col-sm-10">
+                            <?php
+                            $number_of_features = 0;
+                            if (isset($form['data']['features'])) {
+                                foreach ($form['data']['features'] as $count => $feature) {
+                                    $number_of_characteristics = $count;
+
+                                    ?>
+
+                                    <div class="row feature">
+                                        <input type="hidden" name="features[<?= $count ?>][id]"
+                                               value="<?= $feature['id'] ?>">
+                                        <div class="col-sm-9 values">
+                                            <span>Name</span>
+                                            <input type="text" class="form-control" id="features[<?= $count ?>][name]"
+                                                   placeholder="" name="features[0][name]"
+                                                   value="<?= $feature['name'] ?>">
+                                        </div>
+                                        <div class="col-sm-3 actions">
+                                            <button type="button" class="btn btn-danger remove_feature" name="remove"
+                                                    value="true">Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                            }
+                            ?>
+
+
+
 
                             <div class="row feature">
-                                <input type="hidden" name="features[0][id]" value="">
+                                <input type="hidden" name="features[1][id]" value="">
                                 <div class="col-sm-9 values">
                                     <span>Name</span>
-                                    <input type="text" class="form-control" id="features[0][name]" placeholder="" name="features[0][name]" value="">
-                                </div>
-                                <div class="col-sm-3 actions">
-                                    <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>
-                                </div>
-                            </div>
-
-                            <div class="row feature">
-                                <input type="hidden" name="features[0][id]" value="">
-                                <div class="col-sm-9 values">
-                                    <span>Name</span>
-                                    <input type="text" class="form-control" id="features[0][name]" placeholder="" name="features[1][name]" value="">
+                                    <input type="text" class="form-control" id="features[1][name]" placeholder="" name="features[1][name]" value="">
                                 </div>
                                 <div class="col-sm-3 actions">
                                     <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>
@@ -557,21 +659,22 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
 <script>
 
 
-    var no_of_characteristics = <?= 0 ?>;
+    var no_of_characteristics = <?= $number_of_characteristics + 2 ?>;
     var no_of_features = <?= 0 ?>;
 
-    var new_characteristic_html = '<div class="row characteristic">\n' +
-        '                                <input type="hidden" name="characteristics[99][id]" value="">\n' +
+    function new_characteristic_html(no_caracteristic){
+        return '<div class="row characteristic">\n' +
         '                                <div class="col-sm-9 values">\n' +
         '                                    <span>Name</span>\n' +
-        '                                    <input type="text" class="form-control" placeholder="" name="characteristics[99][name]" value="">\n' +
+        '                                    <input type="text" class="form-control" placeholder="" name="characteristics['+ no_caracteristic +'][name]" value="">\n' +
         '                                    <span>Value</span>\n' +
-        '                                    <input type="text" class="form-control" placeholder="" name="characteristics[99][value]" value="">\n' +
+        '                                    <input type="text" class="form-control" placeholder="" name="characteristics['+ no_caracteristic +'][title]" value="">\n' +
         '                                </div>\n' +
         '                                <div class="col-sm-3 actions">\n' +
         '                                    <button type="button" class="btn btn-danger remove_characteristic" name="remove" value="true">Remove</button>\n' +
         '                                </div>\n' +
         '                            </div>';
+    }
 
     var new_feature_html = '<div class="row feature">\n' +
         '                                <input type="hidden" name="features[0][id]" value="">\n' +
@@ -587,7 +690,8 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     $(function () {
         addRemoveAbility()
         $('#add_characteristic').click(function () {
-            $('.characteristics .col-sm-10').append(new_characteristic_html);
+            $('.characteristics .col-sm-10').append(new_characteristic_html(no_of_characteristics));
+            no_of_characteristics = no_of_characteristics + 1;
             addRemoveAbility();
         })
         $('#add_feature').click(function () {
