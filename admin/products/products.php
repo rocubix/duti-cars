@@ -105,24 +105,6 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
         $form['success'] = false;
     }
 
-    //TODO[rocubix]: Check if all inserted characteristics are correct.
-    //NOTE CHECK ALL CHARACTERISTICS
-
-    /*
-    foreach ($form['data']['characteristics'] as $characteristic){
-        //verificari pe fiecare
-    }
-    */
-
-    //TODO[rocubix]: Check if all inserted features are correct.
-    //NOTE CHECK ALL FEATURES
-
-    /*
-    foreach ($form['data']['features'] as $feature){
-        //verificari pe fiecare
-    }
-    */
-
 
     //Inserting Product into database
     if($form['success'] == true){
@@ -175,12 +157,65 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     }
 
     if($form['success'] == true){
-        $form['data']['characteristics'] = htmlspecialchars($form['data']['characteristics'], ENT_QUOTES);
+
+        $sql = "SELECT * FROM characteristics WHERE product_id = " . $_GET['id'];
+        $result = $DB->query($sql);
+        $db['characteristics'] = $result->fetch_all(MYSQLI_ASSOC);
+
+        foreach($db['characteristics'] as $dbCharacteristic){
+            $found = false;
+            foreach ($form['data']['characteristics'] as $formCharacteristic){
+                if(isset($formCharacteristic['id'])){
+                    if($dbCharacteristic['id'] == $formCharacteristic['id']){
+                        $found = true;
+                    }
+                }
+            }
+            if($found == false){
+                $sql = "DELETE FROM characteristics
+                        WHERE id = " . $dbCharacteristic['id'] . ";
+                        ";
+                if(!$DB->query($sql)){
+                    $form['error'][] = 'unable to delete characteristic';
+                }
+            }
+        }
+
+        $sql = "SELECT * FROM features WHERE product_id = " . $_GET['id'];
+        $result = $DB->query($sql);
+        $db['features'] = $result->fetch_all(MYSQLI_ASSOC);
+        foreach($db['features'] as $dbFeature){
+            $found = false;
+            foreach ($form['data']['features'] as $formFeature){
+                if(isset($formFeature['id'])){
+                    if($dbFeature['id'] == $formFeature['id']){
+                        $found = true;
+                    }
+                }
+            }
+            if($found == false){
+                $sql = "DELETE FROM features
+                        WHERE id = " . $dbFeature['id'] . ";
+                        ";
+                if(!$DB->query($sql)){
+                    $form['error'][] = 'unable to delete feature';
+                }
+            }
+        }
+
+
+//        $form['data']['characteristics'] = htmlspecialchars($form['data']['characteristics'], ENT_QUOTES);
         if (isset($form['data']['characteristics'])){
             foreach ($form['data']['characteristics'] as $characteristic){
                 if (isset($characteristic['name']) && $characteristic['name'] != '') {
                     if (isset($characteristic['title']) && $characteristic['title'] != '') {
+                        $characteristic['name'] = htmlspecialchars($characteristic['name'],ENT_QUOTES);
+                        $characteristic['title'] = htmlspecialchars($characteristic['title'],ENT_QUOTES);
+                        //
+
+
                         if (isset($characteristic['id']) && $characteristic['id'] != ''){
+
                             // update db
                             $sql = "
                             UPDATE characteristics
@@ -214,10 +249,11 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     }
 
     if($form['success'] == true){
-        $form['data']['features'] = htmlspecialchars($form['data']['features'], ENT_QUOTES);
+        //$form['data']['features'] = htmlspecialchars($form['data']['features'], ENT_QUOTES);
         if (isset($form['data']['features'])){
             foreach ($form['data']['features'] as $feature){
                 if (isset($feature['name']) && $feature['name'] != '') {
+                    $characteristic['name'] = htmlspecialchars($characteristic['name'],ENT_QUOTES);
                         if (isset($feature['id']) && $feature['id'] != ''){
                             // update db
                             $sql = "
@@ -251,6 +287,8 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
         header('Location: /admin/products/products.php?id=' . $form['data']['id'] . "&message=" . $form['message']);
     }
 }
+
+
 
 
 //echo '<pre>';
@@ -559,8 +597,7 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                             $number_of_features = 0;
                             if (isset($form['data']['features'])) {
                                 foreach ($form['data']['features'] as $count => $feature) {
-                                    $number_of_characteristics = $count;
-
+                                    $number_of_features = $count;
                                     ?>
 
                                     <div class="row feature">
@@ -660,7 +697,7 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
 
 
     var no_of_characteristics = <?= $number_of_characteristics + 2 ?>;
-    var no_of_features = <?= 0 ?>;
+    var no_of_features = <?= $number_of_features + 2 ?>;
 
     function new_characteristic_html(no_caracteristic){
         return '<div class="row characteristic">\n' +
@@ -676,16 +713,18 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
         '                            </div>';
     }
 
-    var new_feature_html = '<div class="row feature">\n' +
-        '                                <input type="hidden" name="features[0][id]" value="">\n' +
-        '                                <div class="col-sm-9 values">\n' +
-        '                                    <span>Name</span>\n' +
-        '                                    <input type="text" class="form-control" id="features[0][name]" placeholder="" name="features[0][name]" value="">\n' +
-        '                                </div>\n' +
-        '                                <div class="col-sm-3 actions">\n' +
-        '                                    <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>\n' +
-        '                                </div>\n' +
-        '                            </div>';
+    function new_feature_html(no_feature) {
+        return '<div class="row feature">\n' +
+            '<div class="col-sm-9 values">\n' +
+            '    <span>Name</span>\n' +
+            '    <input type="text" class="form-control" id="features[' + no_feature + '][name]" placeholder="" name="features[' + no_feature + '][name]" value="">\n' +
+            '</div>\n' +
+            '<div class="col-sm-3 actions">\n' +
+            '    <button type="button" class="btn btn-danger remove_feature" name="remove" value="true">Remove</button>\n' +
+            '</div>\n' +
+            '</div>';
+    };
+
 
     $(function () {
         addRemoveAbility()
@@ -695,7 +734,8 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
             addRemoveAbility();
         })
         $('#add_feature').click(function () {
-            $('.features .col-sm-10').append(new_feature_html)
+            $('.features .col-sm-10').append(new_feature_html(no_of_features));
+            no_of_features = no_of_features + 1;
             addRemoveAbility();
         })
     });
