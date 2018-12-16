@@ -12,6 +12,8 @@ $products = $sql->fetch_all(MYSQLI_ASSOC);
 if (isset($_GET['disable_id']) && $_GET['disable_id'] != "") {
     $sql = "UPDATE products SET availability = '" . AVAILABILITY_UNAVAILABLE . "' WHERE id = " . $_GET['disable_id'];
     $DB->query($sql);
+
+    //TODO[rocubix]: here we should update the reservations to reflect the current car status
 }
 
 

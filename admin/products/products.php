@@ -156,6 +156,10 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
         }
     }
 
+    //TODO[rocubix]: here we should update the reservations to reflect the current car status
+
+
+
     if($form['success'] == true){
 
         $sql = "SELECT * FROM characteristics WHERE product_id = " . $_GET['id'];
