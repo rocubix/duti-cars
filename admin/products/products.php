@@ -6,7 +6,17 @@ const AVAILABILITY_UNAVAILABLE = 0;
 const AVAILABILITY_AVAILABLE = 1;
 const AVAILABILITY_RESERVED = 2;
 const AVAILABILITY_SOLD = 3;
+const AVAILABILITY_CANCELED = 4;
 
+const STATUS_UNAVAILABLE = 0;
+const STATUS_AVAILABLE = 1;
+const STATUS_RESERVED = 2;
+const STATUS_SOLD = 3;
+const STATUS_CANCELED = 4;
+
+
+$sql = $DB->query("SELECT * FROM reservations WHERE id = " . $_GET['id']);
+$reservations = $sql->fetch_all(MYSQLI_ASSOC);
 //
 //echo '<pre>';
 //var_dump($_GET);
@@ -67,11 +77,8 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
     $form['data']['price'] = isset($_GET['price']) ? $_GET['price'] : '';
     $form['data']['availability'] = isset($_GET['availability']) ? $_GET['availability'] : '';
     $form['data']['description'] = isset($_GET['description']) ? $_GET['description'] : '';
-
     $form['data']['characteristics'] = isset($_GET['characteristics']) ? $_GET['characteristics'] : '';
-
     $form['data']['features'] = isset($_GET['features']) ? $_GET['features'] : '';
-
     $form['success'] = true;
     $form['error'] = null;
 
@@ -414,7 +421,7 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                 </div>
                             </li>
 
-                            <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                            <li><a href="/admin/uploads/upload.php"><span class="glyphicon glyphicon-signal"></span> Upload</a></li>
 
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -522,6 +529,10 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                 <option id="availability"
                                         value="<?= AVAILABILITY_SOLD ?>"<?= ($form['data']['availability'] == AVAILABILITY_SOLD) ? ' selected' : '' ?>>
                                     Sold
+                                </option>
+                                <option id="availability"
+                                        value="<?= AVAILABILITY_CANCELED ?>"<?= ($form['data']['availability'] == AVAILABILITY_CANCELED) ? ' selected' : '' ?>>
+                                    Canceled
                                 </option>
                             </select>
                             <!--<input type="text" class="form-control" id="availability" placeholder="" name="availability" value= --><? /*= $form['data']['availability']*/ ?>
@@ -682,9 +693,76 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                 <button type="button" class="btn btn-danger">Upload</button>
                             </div>
 
+
                         </div>
                     </div>
                 </form>
+                <div id="product_table" class="table-responsive">
+                    <table class="table active">
+                        <thead
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Code</th>
+                            <th>Availability</th>
+                            <th>Status</th>
+
+
+                        </tr>
+                        </thead>
+                        <?php
+                        foreach ($reservations as $reservation) {
+
+                            ?>
+
+                            <tr>
+                            <td><?= $reservation['id'] ?></td>
+                            <td><?= $reservation['product_id'] ?></td>
+                            <td>
+                                <?php
+                                switch ($reservation['status']) {
+                                    case STATUS_UNAVAILABLE:
+                                        echo "unavailable";
+                                        break;
+                                    case STATUS_AVAILABLE:
+                                        echo "available";
+                                        break;
+                                    case STATUS_RESERVED:
+                                        echo "reserved";
+                                        break;
+                                    case STATUS_SOLD:
+                                        echo "sold";
+                                        break;
+                                    case STATUS_CANCELED:
+                                        echo "canceled";
+                                        break;
+                                }
+
+                                ?>
+                            </td>
+                            <td>
+                            <?php
+                            foreach ($reservations as $reservation) {
+
+                                ?>
+                                <?php
+
+
+                                ?>
+                                </td>
+
+                                </tr>
+
+                                <?php
+                            }
+                            ?>
+                            <?php
+                        }
+                        ?>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

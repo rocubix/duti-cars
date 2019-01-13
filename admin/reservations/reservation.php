@@ -4,6 +4,7 @@ const STATUS_UNAVAILABLE = 0;
 const STATUS_AVAILABLE = 1;
 const STATUS_RESERVED = 2;
 const STATUS_SOLD = 3;
+const STATUS_CANCELED = 4;
 
 $form['data']['product_id'] = isset($_GET['product_id']) ? $_GET['product_id'] : '';
 $form['data']['name'] = isset($_GET['name']) ? $_GET['name'] : '';
@@ -232,7 +233,7 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                 </div>
                             </li>
 
-                            <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                            <li><a href="/admin/uploads/upload.php"><span class="glyphicon glyphicon-signal"></span> Upload</a></li>
 
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -357,6 +358,9 @@ if (isset($_GET['save']) && $_GET['save'] == true) {
                                 </option>
                                 <option id="status"
                                         value="<?= STATUS_SOLD ?>"<?= ($form['data']['status'] == STATUS_SOLD) ? ' selected' : '' ?>>
+                                    Sold
+                                </option><option id="status"
+                                        value="<?= STATUS_CANCELED ?>"<?= ($form['data']['status'] == STATUS_CANCELED) ? ' selected' : '' ?>>
                                     Sold
                                 </option>
                             </select>

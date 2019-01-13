@@ -5,6 +5,7 @@ const AVAILABILITY_UNAVAILABLE = 0;
 const AVAILABILITY_AVAILABLE = 1 ;
 const AVAILABILITY_RESERVED = 2 ;
 const AVAILABILITY_SOLD = 3 ;
+const AVAILABILITY_CANCELED = 4 ;
 
 $sql = $DB->query("SELECT * FROM products");
 $products = $sql->fetch_all(MYSQLI_ASSOC);
@@ -138,7 +139,7 @@ if (isset($_GET['disable_id']) && $_GET['disable_id'] != "") {
                                 </div>
                             </li>
 
-                            <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                            <li><a href="/admin/uploads/upload.php"><span class="glyphicon glyphicon-signal"></span> Upload</a></li>
 
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -203,6 +204,9 @@ if (isset($_GET['disable_id']) && $_GET['disable_id'] != "") {
                                             break;
                                         case AVAILABILITY_SOLD:
                                             echo "sold";
+                                            break;
+                                        case AVAILABILITY_CANCELED:
+                                            echo "canceled";
                                             break;
                                     }
 

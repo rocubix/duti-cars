@@ -4,6 +4,8 @@ const STATUS_UNAVAILABLE = 0;
 const STATUS_AVAILABLE = 1;
 const STATUS_RESERVED = 2;
 const STATUS_SOLD = 3;
+const STATUS_CANCELED = 4;
+
 
 $sql = $DB->query("SELECT * FROM reservations");
 $reservations = $sql->fetch_all(MYSQLI_ASSOC);
@@ -116,7 +118,7 @@ $reservations = $sql->fetch_all(MYSQLI_ASSOC);
                                 </div>
                             </li>
 
-                            <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                            <li><a href="/admin/uploads/upload.php"><span class="glyphicon glyphicon-signal"></span> Upload</a></li>
 
                         </ul>
                     </div><!-- /.navbar-collapse -->
@@ -177,6 +179,9 @@ $reservations = $sql->fetch_all(MYSQLI_ASSOC);
                                     break;
                                 case STATUS_SOLD:
                                     echo "sold";
+                                    break;
+                                case STATUS_CANCELED:
+                                    echo "canceled";
                                     break;
                             }
 

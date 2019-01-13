@@ -106,7 +106,7 @@
                                     </div>
                                 </li>
 
-                                <li><a href="#"><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                                <li><a href="uploads/upload.php"><span class="glyphicon glyphicon-signal"></span> Upload</a></li>
 
                             </ul>
                         </div><!-- /.navbar-collapse -->
